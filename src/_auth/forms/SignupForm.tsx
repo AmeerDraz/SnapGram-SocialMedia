@@ -15,9 +15,9 @@ import { SignupValidation } from "@/lib/validation";
 import type { z } from "zod";
 import Loader from "@/components/shared/Loader";
 import { Link } from "react-router-dom";
+import { createUserAccount } from "@/lib/appwrite/api";
 
 const SignupForm = () => {
-
     const isLoading = false;
 
     // 1. Define your form.
@@ -35,9 +35,14 @@ const SignupForm = () => {
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof SignupValidation>) {
         // const newUser = await createUserAccount(values);
+        const newUser = await createUserAccount({
+            name: values.name,
+            username: values.username,
+            email: values.email,
+            password: values.password,
+        });
 
-
-        
+        console.log(newUser);
     }
 
     return (
@@ -137,8 +142,15 @@ const SignupForm = () => {
                             "Sign up"
                         )}
                     </Button>
-                    <p className="text-small-regular text-light text-center mt-2">Already have an account?
-                        <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">Log in</Link></p>
+                    <p className="text-small-regular text-light text-center mt-2">
+                        Already have an account?
+                        <Link
+                            to="/sign-in"
+                            className="text-primary-500 text-small-semibold ml-1"
+                        >
+                            Log in
+                        </Link>
+                    </p>
                 </form>
             </div>
         </Form>
