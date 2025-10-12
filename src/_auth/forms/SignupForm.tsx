@@ -15,11 +15,16 @@ import { useForm } from "react-hook-form";
 import { SignupValidation } from "@/lib/validation";
 import type { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 const SignupForm = () => {
     const { toast } = useToast();
+
+    const navigate = useNavigate();
+    const { checkAuthUser , isLoading: isUserLoading } = useUserContext();
+
 
 
     const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
@@ -59,10 +64,18 @@ const SignupForm = () => {
                 title: "Sign in failed. Please try again.",
             });
         }
-        return toast({
-            title: "Sign up successful.",
-        });
-        navigate("/");
+
+        const isLoggedIn = await checkAuthUser();
+
+        if (isLoggedIn) {
+            form.reset();
+            navigate("/");
+        } else {
+            return
+            toast({title: "Sign up failed. Please try again."});
+        }
+
+
     }
     return (
         <Form {...form}>
